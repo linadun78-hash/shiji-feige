@@ -1,0 +1,12 @@
+{
+  "name": "shiji-feige",
+  "version": "0.3.0",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.cjs",
+    "test": "node --test --test-isolation=none tests/capture.test.cjs tests/collection.test.cjs"
+  },
+  "dependencies": {
+    "@mozilla/readability": "0.6.0"
+  }
+}

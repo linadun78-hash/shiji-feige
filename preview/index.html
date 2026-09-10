@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>拾集 · 飞鸽 | 交互原型</title>
+  <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+  <header class="prototype-bar"><strong>飞鸽 / 交互原型</strong><span>模拟内容 · 不采集网页 · 不发送数据</span><label>状态 <select id="scenario"><option value="ready">待发送</option><option value="empty">无内容</option><option value="privacy">个人信息</option><option value="offline">未连接</option><option value="error">发送失败</option><option value="success">发送成功</option></select></label></header>
+  <main class="article">
+    <nav>FIELDNOTES <span>/ 工作与观察</span></nav>
+    <p class="article-meta">工作方法 &nbsp; / &nbsp; 2026.09.10</p>
+    <h1>把阅读中的线索，<br>留给下一步思考。</h1>
+    <p class="lead">真正有用的信息，往往散落在不同的页面里。一份岗位描述、一段项目经验，或是一条值得追问的建议。</p>
+    <section id="sample-region"><h2>从一段具体的内容开始</h2><p>先保留原文，再提出问题。整理资料时，同时记录来源、语境与时间，可以帮助我们回到信息发生的地方，而不是只剩一个脱离上下文的结论。</p><p>把想继续研究的内容放在一起，区分事实、判断和待验证的问题。让工具负责传递，让思考保持连贯。</p></section>
+    <section><h2>让来源与内容一起留下</h2><p>一段文字的价值不只在于它说了什么，还在于它来自哪里。面向具体任务的摘录，应当足够精确，也应保留后续查证的入口。</p></section>
+    <footer>FIELDNOTES / 阅读札记 <span>示例文章</span></footer>
+  </main>
+
+  <button id="launcher" class="launcher" aria-label="打开拾集飞鸽" aria-expanded="false" aria-controls="pigeon-panel" title="拾集 · 飞鸽"><i data-lucide="bird"></i></button>
+  <section id="pigeon-panel" class="panel" aria-label="拾集飞鸽悬浮面板" hidden>
+    <header class="panel-header"><div class="brand-mark"><i data-lucide="bird"></i></div><div class="brand"><small>SHIJI / FEIGE</small><h2>拾集 · 飞鸽</h2></div><span id="connection" class="connection">已连接</span><button id="settings" class="icon-button" title="连接详情" aria-label="连接详情"><i data-lucide="settings-2"></i></button><button id="close" class="icon-button" title="收起" aria-label="收起飞鸽"><i data-lucide="minus"></i></button></header>
+    <div class="modes" role="group" aria-label="采集方式"><button data-mode="selection" aria-pressed="true"><i data-lucide="text-cursor"></i>当前选区</button><button data-mode="region" aria-pressed="false"><i data-lucide="scan"></i>选择区域</button><button data-mode="page" aria-pressed="false"><i data-lucide="file-text"></i>正文提取</button></div>
+    <div class="panel-body">
+      <div id="notice" class="notice" role="status" hidden></div>
+      <div id="privacy" class="privacy" hidden><div><i data-lucide="shield-alert"></i><span>包含邮箱、手机号</span></div><button id="redact">脱敏</button></div>
+      <section class="source"><div class="section-caption"><span>01 / 页面来源</span><span id="source-mode">选区</span></div><h3>把阅读中的线索，留给下一步思考。</h3><p><i data-lucide="link"></i><span>fieldnotes.example / reading / context</span></p></section>
+      <section class="editor-section"><div class="section-caption"><label for="editor">02 / 预览与编辑</label><span id="count">0 字</span></div><textarea id="editor" spellcheck="false" placeholder="暂无内容"></textarea><div class="editor-foot"><span id="draft-state">待确认</span><button id="reset" class="icon-button" aria-label="恢复示例原文" title="恢复原文"><i data-lucide="rotate-ccw"></i></button></div></section>
+      <details id="details"><summary>来源与连接详情</summary><dl><dt>目标</dt><dd>本地 Agent</dd><dt>连接</dt><dd>模拟连接</dd><dt>内容格式</dt><dd>纯文本 / 预览</dd><dt>来源时间</dt><dd>2026-09-10 14:32</dd></dl></details>
+    </div>
+    <footer class="panel-footer"><button id="recapture" class="secondary"><i data-lucide="refresh-cw"></i>重新选取</button><button id="send" class="primary"><i data-lucide="send"></i><span>发送给 Agent</span></button></footer>
+  </section>
+  <script src="vendor/lucide.min.js"></script>
+  <script src="preview.js"></script>
+</body>
+</html>

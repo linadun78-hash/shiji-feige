@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "拾集 · 飞鸽",
+  "version": "0.3.0",
+  "description": "拾取网页材料，为每条材料设置目的、指令和回复语言，整理后发送至本地 Agent 服务。",
+  "permissions": ["activeTab", "scripting", "clipboardWrite", "storage"],
+  "host_permissions": ["http://127.0.0.1/*"],
+  "background": {"service_worker": "src/background.js"},
+  "action": {"default_title": "在当前页面启用拾集 · 飞鸽"}
+}

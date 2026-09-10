@@ -1,0 +1,42 @@
+<button id="launcher" class="launcher" aria-label="打开拾集飞鸽" aria-expanded="false" title="拾集 · 飞鸽"><i data-icon="Bird"></i></button>
+<section id="pigeon-panel" class="panel" aria-label="拾集飞鸽" hidden>
+  <header class="panel-header"><div class="brand-mark"><i data-icon="Bird"></i></div><div class="brand"><small>SHIJI / FEIGE</small><h2>拾集 · 飞鸽</h2></div><span id="connection" class="connection offline">未连接</span><button id="settings" class="icon-button" title="连接详情" aria-label="连接详情"><i data-icon="Settings2"></i></button><button id="close" class="icon-button" title="收起" aria-label="收起飞鸽"><i data-icon="Minus"></i></button></header>
+  <div class="modes" role="group" aria-label="采集方式"><button data-mode="selection" aria-pressed="true"><i data-icon="TextCursor"></i>划选文字</button><button data-mode="region" aria-pressed="false"><i data-icon="Scan"></i>选择区域</button><button data-mode="page" aria-pressed="false"><i data-icon="FileText"></i>正文提取</button></div>
+  <nav class="view-tabs" aria-label="材料视图"><button data-view="capture" aria-pressed="true">当前材料</button><button data-view="collection" aria-pressed="false">收集箱 <span id="collection-count">0</span></button></nav>
+  <div class="panel-body">
+    <div id="notice" class="notice" role="status">尚未拾取内容</div>
+    <div id="connection-notice" class="notice error" role="status" hidden></div>
+    <section id="agent-handoff" class="agent-handoff" aria-label="在 Agent 中读取" hidden>
+      <div class="section-caption"><label for="agent-prompt">上次发送 · 在 Agent 中读取</label><button id="copy-prompt" class="icon-button" title="复制调用提示" aria-label="复制调用提示"><i data-icon="Copy"></i></button></div>
+      <p id="receipt-state" role="status"></p>
+      <textarea id="agent-prompt" readonly spellcheck="false" aria-describedby="agent-help"></textarea>
+      <p id="agent-help">复制到已连接飞鸽 MCP 的 Agent 对话中发送。首次接入若找不到工具，请重启客户端；之后无需每次重启。</p>
+      <span id="prompt-feedback" role="status"></span>
+    </section>
+    <div id="capture-view">
+    <div id="privacy" class="privacy" hidden><div><i data-icon="ShieldAlert"></i><span>可能包含邮箱或手机号</span></div><button id="redact">脱敏</button></div>
+    <section class="source"><div class="section-caption"><span>01 / 页面来源</span><span id="source-mode">未拾取</span></div><h3 id="source-title"></h3><p><i data-icon="Link"></i><span id="source-url"></span></p></section>
+    <div id="pending-box" class="pending-box" hidden><p>新内容已选取</p><div><button id="replace" class="secondary">替换</button><button id="append" class="secondary">追加</button><button id="discard" class="icon-button" title="取消新选区" aria-label="取消新选区"><i data-icon="X"></i></button></div></div>
+    <section class="editor-section"><div class="section-caption"><label for="editor">02 / 预览与编辑</label><span id="count">0 字</span></div><textarea id="editor" spellcheck="false" placeholder="尚未拾取内容" maxlength="100000"></textarea><div class="editor-foot"><span id="draft-state">尚未发送</span><div><button id="copy" class="icon-button" title="复制正文" aria-label="复制正文"><i data-icon="Copy"></i></button><button id="download" class="icon-button" title="导出 Markdown" aria-label="导出 Markdown"><i data-icon="Download"></i></button><button id="clear" class="icon-button" title="清空草稿" aria-label="清空草稿"><i data-icon="Trash2"></i></button></div></div></section>
+    <section class="task-fields" aria-label="这条材料的任务">
+      <div class="section-caption"><span>03 / 这条材料的任务</span></div>
+      <label for="purpose">选取目的</label><textarea id="purpose" rows="2" maxlength="1000" placeholder="例如：判断这个岗位是否适合我申请"></textarea>
+      <div class="field-pair"><div><label for="preset">任务预设</label><select id="preset"><option value="summary">提炼要点</option><option value="explain">解释内容</option><option value="review">检查论据</option><option value="rewrite">改写表达</option><option value="actions">整理行动</option><option value="custom">自定义</option></select></div><div><label for="item-language">回复语言</label><select id="item-language"><option value="inherit">跟随批次</option></select></div></div>
+      <label for="instruction">给 Agent 的要求</label><textarea id="instruction" rows="3" maxlength="2000"></textarea>
+      <label class="check-label"><input id="reference" type="checkbox">仅作参考，不单独回答</label>
+      <button id="save-item" class="secondary" disabled><i data-icon="Plus"></i><span>加入收集箱</span></button>
+    </section>
+    </div>
+    <div id="collection-view" hidden>
+      <section class="batch-settings" aria-label="发送预设"><div class="section-caption"><span>发送预设</span><div><button id="reset-settings" class="icon-button" title="恢复已保存的预设" aria-label="恢复已保存的预设" disabled><i data-icon="RotateCcw"></i></button><button id="save-settings" class="icon-button" title="保存发送预设" aria-label="保存发送预设" disabled><i data-icon="Save"></i></button></div></div><label for="batch-language">默认回复语言</label><select id="batch-language"></select><label for="overall">整体要求（可选）</label><textarea id="overall" rows="2" maxlength="4000" placeholder="例如：逐条回答后，归纳它们的共同点"></textarea></section>
+      <div class="section-caption"><span id="batch-summary">尚无材料</span><button id="export-batch" class="icon-button" title="导出任务包 Markdown" aria-label="导出任务包 Markdown"><i data-icon="Download"></i></button></div>
+      <div id="collection-list" class="collection-list"></div><p id="collection-empty" class="empty-state">收集箱为空</p>
+      <p id="batch-validation" class="validation" role="status"></p>
+    </div>
+    <details id="details"><summary>来源与连接详情</summary><dl><dt>目标</dt><dd>本地服务</dd><dt>地址</dt><dd>127.0.0.1:8766</dd><dt>采集时间</dt><dd id="captured-time">未采集</dd><dt>状态</dt><dd id="bridge-detail">未检查</dd></dl><button id="check" class="secondary">检查连接</button></details>
+  </div>
+  <footer class="panel-footer"><button id="recapture" class="secondary"><i data-icon="RefreshCw"></i>继续选取</button><button id="send" class="primary" disabled><i data-icon="Send"></i><span>发送选中 (0)</span></button></footer>
+</section>
+<div id="selection-tools" class="selection-tools" hidden><button id="pick" title="拾取选中文字"><i data-icon="Plus"></i>拾取</button></div>
+<div id="region-outline" class="region-outline" hidden></div>
+<div id="picking-bar" class="picking-bar" hidden><span id="picking-label">选择页面区域</span><button id="cancel-picking" aria-label="取消选择" title="取消选择"><i data-icon="X"></i></button></div>

@@ -1,0 +1,16 @@
+node_modules/
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+*.log
+*.sqlite
+*.sqlite3
+*.db
+build/
+dist/
+evaluations/
+*.zip
