@@ -27,6 +27,7 @@
   let submission = null;
   let receiptBusy = false;
   let checkBusy = false;
+  let startQueued = false;
   let selectionTimer;
   let collection = FeigeCollection.empty();
   let collectionLoaded = false;
@@ -104,7 +105,7 @@
     $('#pigeon-panel').hidden = !value;
     $('#launcher').hidden = value;
     $('#launcher').setAttribute('aria-expanded',String(value));
-    if (value) check();
+    if (value) check(true);
   }
   function stopPicking() {
     picking = null;
@@ -304,7 +305,11 @@
       NO_EXTENSION:'采集练习页 · 无扩展连接',
       EXTENSION_RELOADED:'扩展连接已失效，请刷新网页后重新启用飞鸽',
       WRONG_SERVICE:'8766 端口不是飞鸽服务',
-      BRIDGE_OFFLINE:'本地服务未启动或不可达 · 127.0.0.1:8766'
+      BRIDGE_OFFLINE:'本地服务未启动或不可达 · 127.0.0.1:8766',
+      NATIVE_UNAVAILABLE:'未找到可用的本地启动器。首次使用请双击 install-feige.cmd 完成注册；已注册请检查项目是否移动或 Python 环境是否改变。',
+      PORT_OCCUPIED:'8766 端口被其他程序占用，飞鸽未替换该程序。',
+      START_FAILED:'后台启动失败。请运行 start-feige.cmd 查看结果，或检查本机 ShijiFeige 日志。',
+      START_TIMEOUT:'后台启动超时，请稍后重试或运行 start-feige.cmd。'
     };
     const message=reasons[error] || '连接失败，请检查本地服务';
     $('#connection').textContent='未连接';
@@ -314,17 +319,19 @@
     $('#connection-notice').textContent=error==='EXTENSION_RELOADED'
       ? `${message}。刷新会清空当前草稿，请先复制正文。`
       : error==='BRIDGE_OFFLINE'
-        ? '本地服务不可达。请运行 start-feige.cmd 并保持服务窗口打开；无需为此重启 Codex。'
+        ? '本地服务未运行。点击“启动并连接”，或双击 start-feige.cmd；首次自动唤起需先运行 install-feige.cmd。'
         : message;
     if (submission) {
       $('#draft-state').textContent='曾保存 · 当前无法核验';
       notice();
     }
   }
-  async function check() {
-    if (checkBusy) return;
+  async function check(start=false) {
+    if (checkBusy) {startQueued=startQueued||start;return;}
     checkBusy=true;
-    const result=await request({type:'FEIGE_HEALTH'});
+    if(start){$('#connection').textContent='连接中';$('#check').disabled=true;}
+    const result=await request({type:start?'FEIGE_START':'FEIGE_HEALTH'});
+    $('#check').disabled=false;
     checkBusy=false;
     connected=Boolean(result?.ok);
     if (connected) {
@@ -335,6 +342,7 @@
     } else disconnected(result?.error);
     update();
     if (connected) await checkReceipt();
+    if(startQueued){startQueued=false;await check(true);}
   }
   async function checkReceipt() {
     if (!submission || receiptBusy || busy) return;
@@ -371,7 +379,7 @@
     if (!document.hidden && !$('#pigeon-panel').hidden && !busy) check();
   },5000);
   $('#settings').onclick = () => {$('#details').open=!$('#details').open;if($('#details').open)$('#details').scrollIntoView({block:'nearest'});};
-  $('#check').onclick=check;
+  $('#check').onclick=()=>check(true);
   $('#send').onclick=async event => {
     if (!event.isTrusted || busy || !connected || $('#send').disabled) return;
     try {FeigeCollection.envelope(collection);} catch(error) {fail(error);return;}

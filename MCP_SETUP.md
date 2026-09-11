@@ -7,14 +7,16 @@
 
 ## 启动本地服务
 
-Windows 可直接双击项目根目录 `start-feige.cmd`。出现服务启动信息后保持窗口打开；关闭窗口或按 Ctrl+C 会停止服务。已有服务时脚本不会重复启动。
+Windows 首次安装依赖后，双击项目根目录 `install-feige.cmd` 注册本地启动器。之后点击飞鸽扩展即可唤起后台服务，不必保持终端窗口。也可双击 `start-feige.cmd` 手动后台启动，`status-feige.cmd` 查看状态，`stop-feige.cmd` 停止本启动器管理的服务。已有服务时复用，不重复启动。
 
 在解压或克隆后的项目根目录（包含 `server/` 的目录）执行：
 
 ```powershell
 python -m pip install -r server/requirements.txt
-python -m server.run
+python -m server.native_setup install
 ```
+
+注册仅适用于 Windows，依赖现有 Python。macOS/Linux 或需要查看前台诊断日志时仍使用 `python -m server.run` 并保持终端运行。注册不会自动修改 Agent 配置；完整安装、升级和注销说明见 [README](README.md)。
 
 地址固定为 `127.0.0.1:8766`。不使用 `0.0.0.0`、多个 worker 或公网转发。数据仅在内存中，服务重启即清空。
 

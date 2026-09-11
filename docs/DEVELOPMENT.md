@@ -14,6 +14,8 @@ npm test
 
 构建将面板模板、CSS 和本地第三方库整合到 `extension/`。不从 CDN 加载运行代码。修改后在扩展管理页重新加载，再刷新原网页。
 
+图标已包含在源码包中。修改图标时，在可用 Playwright/Chromium 环境运行 `npm run build:icons`；脚本从已有 Lucide Bird 生成 PNG，无远程素材。
+
 ## 服务测试
 
 ```powershell
@@ -45,7 +47,15 @@ node tests/browser-isolation.cjs
 
 截图输出到 `evaluations/`，测试浏览器资料输出到系统临时目录；二者均不作为用户数据或公开仓库内容提交。
 
+## Windows 自动启动测试
+
+`python -m pytest tests/test_desktop.py -q` 覆盖 Native 协议、后台启动/复用/退出/重启及端口占用。测试使用空闲端口与独立状态目录，不操作已有 8766 服务。
+
+`python tests/native-e2e.py` 需要 Windows 注册表和浏览器启动权限，使用 Playwright/Chromium。它在当前用户下创建随机命名的临时 Native Messaging 注册项，使用包含中文和空格的安装路径，验证实际浏览器启动宿主、服务复用、显式重试、扩展图标及关闭浏览器后服务仍可用；结束时注销测试项并停止测试服务。异常中断时可在控制台或 `evaluations/native-e2e-*` 定位本次临时路径，不要删除实际 `com.shiji.feige` 注册项。
+
 ## 已有证据与未完成项
+
+0.4.0 自动启动的实际结果及尚未完成的完整端到端复验见 [AUTOSTART_VERIFICATION.md](AUTOSTART_VERIFICATION.md)。
 
 0.3.0 在 Windows、Node 24.12、Python 3.12.7、Chromium 131 上已有 Node 11 项、Python 14 项及浏览器流程验证记录。当前发布副本的实际验证结果见 [SOURCE_PREVIEW_VERIFICATION.md](SOURCE_PREVIEW_VERIFICATION.md)。
 

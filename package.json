@@ -1,10 +1,11 @@
 {
   "name": "shiji-feige",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "build": "node scripts/build.cjs",
-    "test": "node --test --test-isolation=none tests/capture.test.cjs tests/collection.test.cjs"
+    "test": "node --test --test-isolation=none tests/capture.test.cjs tests/collection.test.cjs tests/bridge.test.cjs",
+    "build:icons": "node scripts/build-icons.cjs"
   },
   "dependencies": {
     "@mozilla/readability": "0.6.0"

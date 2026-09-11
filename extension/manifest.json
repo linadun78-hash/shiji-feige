@@ -1,10 +1,12 @@
 {
   "manifest_version": 3,
   "name": "拾集 · 飞鸽",
-  "version": "0.3.0",
+  "version": "0.4.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs3vmXkohaKZxPgKbh5M+KuJ5DL6NFjZvPRo4tMAfLiPmgrH/vntg95umRI4DnlDkq4KAaOaB2mLC18hiiluN1wYpIwDl5SUJhRqKCEIdzJ5f/0EVUCBbEvAAjKGyBGdkyXPcuVz0+VdeY+tZMp0xJCvDW0Do1Kaj4Jwr7HFMzq+qtT8+9n2JJ3AKt/zavZ3fDhncdrmpSqWx1JwGpCePyeEtcar3wPJ/LA19pCfUgrdX5NVvhiN5V05HnY+4dHByMbGtzl6VWMJaDVH12bxtpyaNXDzBiQbSIacUDU2gY14I5GekcZiKuB1JuHPYHxr5YXFPG+q1WTcocAQH8lWfbwIDAQAB",
   "description": "拾取网页材料，为每条材料设置目的、指令和回复语言，整理后发送至本地 Agent 服务。",
-  "permissions": ["activeTab", "scripting", "clipboardWrite", "storage"],
+  "permissions": ["activeTab", "scripting", "clipboardWrite", "storage", "nativeMessaging"],
+  "icons": {"16":"icons/16.png", "32":"icons/32.png", "48":"icons/48.png", "128":"icons/128.png"},
   "host_permissions": ["http://127.0.0.1/*"],
   "background": {"service_worker": "src/background.js"},
-  "action": {"default_title": "在当前页面启用拾集 · 飞鸽"}
+  "action": {"default_title": "在当前页面启用拾集 · 飞鸽", "default_icon":{"16":"icons/16.png", "32":"icons/32.png", "48":"icons/48.png"}}
 }

@@ -9,6 +9,8 @@
 
 构建使用的 Lucide 副本与许可证还保存在 `preview/vendor/`。Python 服务的依赖由 `server/requirements.txt` 声明，通过包管理器安装，未把整个 Python 环境放进源码发行包。
 
+`extension/icons/` 中的 PNG 图标由 Lucide Bird 图形渲染，相关许可见上表的 Lucide 许可证；生成脚本为 `scripts/build-icons.cjs`。
+
 第三方组件的许可证不自动适用于本仓库自有代码，自有代码的权利声明也不限制第三方许可证授予的权利。
 
 ## 自有代码

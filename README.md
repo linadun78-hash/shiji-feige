@@ -10,7 +10,7 @@
 
 `extension/vendor/` 和 `preview/vendor/` 中的第三方组件仍适用各自的许可证，见 [第三方组件说明](THIRD_PARTY_NOTICES.md)。第三方许可证不代表飞鸽自有代码采用同一许可证。
 
-**当前为 0.3.0 源码预览。** 需要手动加载浏览器扩展、运行 Python 服务并配置 Agent；Windows 整合包与扩展商店版本尚未提供。
+**当前为 0.4.0 源码预览。** Windows 用户首次安装依赖并注册本地启动器后，点击扩展即可后台唤起服务。仍需 Python 3.10+、手动加载扩展和配置 Agent；免 Python 的 Windows 整合包与扩展商店版本尚未提供。
 
 ## 能做什么
 
@@ -20,6 +20,8 @@
 - 编辑、勾选、排序材料，添加整体要求，统一发送一个任务包。
 - 复制或导出 Markdown；通过本地 MCP 让 Agent 读取最终确认的快照。
 - 复制包含准确批次 ID 的读取提示，查看该份材料的 MCP 读取回执。
+- Windows 一次注册后由扩展唤起后台服务；提供启动、停止、状态查询与注销脚本。
+- 扩展管理页和工具栏显示飞鸽图标。
 
 飞鸽负责整理和传递，不直接调用大模型，也不会自动向外部聊天窗口发送消息。AI 分析由用户自己的 Agent 完成。
 
@@ -45,16 +47,19 @@
 
 下载并解压本仓库源码，进入包含 `server/` 和 `extension/` 的目录。源码包已经包含构建好的扩展资源，运行采集功能无需先安装 Node。
 
-### 2. 启动本地连接服务
+### 2. 首次安装依赖并注册（Windows）
 
 在项目根目录执行：
 
 ```powershell
 python -m pip install -r server/requirements.txt
-python -m server.run
 ```
 
-服务地址为 `http://127.0.0.1:8766`。保持窗口打开；关闭窗口会停止服务。已装好依赖的 Windows 用户也可以双击 `start-feige.cmd`，该脚本不会自动安装依赖。
+然后双击项目根目录的 `install-feige.cmd`，看到 `Registration complete` 后可关闭窗口。注册只针对当前 Windows 用户的 Edge/Chrome，不设置开机自启，不需要管理员权限。项目文件夹和 Python 安装目录需保留在原位置；移动项目或更换 Python 后，请重新运行注册脚本。
+
+这一步只做一次；之后点击扩展时按需启动后台服务。无需一直打开终端。服务仍只监听 `http://127.0.0.1:8766`。浏览器策略禁止 Native Messaging 或未注册时，可双击 `start-feige.cmd` 手动后台启动。
+
+macOS/Linux 本轮仍使用前台方式：`python -m server.run`，保持该终端运行。
 
 ### 3. 加载扩展
 
@@ -77,6 +82,23 @@ shiji-feige-main/
 如果出现“清单文件丢失或不可读取”，请取消报错窗口，重新点击“加载解压缩的扩展”，进入项目目录并选择 `extension`。不要选择外层的 `shiji-feige-main` 或 ZIP 文件；如果解压后多套了一层同名目录，请继续进入，直到找到直接包含 `manifest.json` 的 `extension` 文件夹。
 
 页面刷新或导航后需重新启用。扩展商店和浏览器内部页面不支持注入。
+
+首次从 0.3.x 升级前，请先导出旧扩展收集箱。本版固定了源码扩展 ID，浏览器可能将其识别为新扩展，旧存储不会自动迁移。新 ID 可通过 `python -c "from server.native_setup import extension_id; from pathlib import Path; print(extension_id(Path('extension/manifest.json')))"` 核对。注册脚本默认授权该 ID；自定义扩展 ID 可使用 `python -m server.native_setup install --extension-id <扩展ID>`。一次只注册一个 ID，Edge/Chrome 加载相同源码时使用相同 ID。
+
+### 日常启动和退出
+
+| 操作 | 方法 |
+| --- | --- |
+| 自动启动 | 点击浏览器工具栏的飞鸽图标，或打开网页中的飞鸽面板 |
+| 重试连接 | 面板“来源与连接详情”中的“启动并连接” |
+| 手动后台启动 | 双击 `start-feige.cmd`，成功后窗口可关闭 |
+| 查看后台状态 | 双击 `status-feige.cmd` |
+| 停止后台服务 | 双击 `stop-feige.cmd`；只停止由此启动器管理的服务 |
+| 取消自动唤起注册 | 双击 `uninstall-feige.cmd`，不会删除扩展收集箱 |
+
+关闭网页或浏览器后，后台服务继续运行，便于 Agent 读取；注销 Windows 或重启电脑会结束进程，下次点击扩展可重新唤起。当前没有托盘图标；退出使用停止脚本。退出服务会清空服务端内存快照，扩展收集箱仍保留，可重新发送。
+
+从旧的 `python -m server.run` 升级时，先在原终端按 Ctrl+C，再启动新版；后台停止脚本不会终止旧的手动前台进程。端口占用时不会结束其他程序。启动日志位于 `%LOCALAPPDATA%\ShijiFeige\startup.log` 和 `service.log`；需要前台诊断时，先停止后台服务，再运行 `python -m server.run`。
 
 ### 4. 连接 Agent
 

@@ -1,7 +1,16 @@
-importScripts('collection-core.js');
+importScripts('collection-core.js', 'bridge-core.js');
 const BASE = 'http://127.0.0.1:8766';
 const ASSETS = ['vendor/lucide.min.js', 'vendor/Readability.js', 'src/capture-core.js', 'src/collection-core.js', 'src/extract.js', 'src/view-bundle.js', 'src/content.js'];
 const COLLECTION_KEY = 'feige.collection.v1';
+const bridge = FeigeBridge.create({check:checkBridge, launch:()=>Promise.race([
+  chrome.runtime.sendNativeMessage('com.shiji.feige',{action:'start'}),
+  new Promise((_,reject)=>setTimeout(()=>reject(Error('START_TIMEOUT')),22000))
+])});
+let wakeError = null;
+async function wakeBridge() {
+  try {const result=await bridge.ensure();wakeError=null;return result;}
+  catch(error) {wakeError=error.message;throw error;}
+}
 // Older Chromium builds expose this method only on session storage.
 const storageReady = Promise.resolve().then(() => chrome.storage.local.setAccessLevel?.({accessLevel:'TRUSTED_CONTEXTS'}));
 let collectionQueue = Promise.resolve();
@@ -51,6 +60,7 @@ async function activateTab(tab) {
   try {
     if (!tab.id || !/^(https?|file):/.test(tab.url || '')) throw new Error('UNSUPPORTED');
     await chrome.scripting.executeScript({target:{tabId:tab.id},files:ASSETS});
+    void wakeBridge().catch(()=>{});
     await chrome.action.setBadgeText({tabId:tab.id,text:''});
   } catch {
     await chrome.action.setBadgeText({tabId:tab.id,text:'!'});
@@ -59,17 +69,21 @@ async function activateTab(tab) {
 }
 chrome.action.onClicked.addListener(activateTab);
 async function checkBridge() {
-  const response = await fetch(`${BASE}/health`, {signal:AbortSignal.timeout(2500),redirect:'error'});
-  const data = await response.json();
+  let response;
+  try {response = await fetch(`${BASE}/health`, {signal:AbortSignal.timeout(2500),redirect:'error'});}
+  catch {throw Error('BRIDGE_OFFLINE');}
+  let data;
+  try {data=await response.json();} catch {throw Error('WRONG_SERVICE');}
   if (!response.ok || data?.data?.service !== 'web-context-agent-bridge') throw new Error('WRONG_SERVICE');
   return data.data;
 }
 chrome.runtime.onMessage.addListener((message, sender, reply) => {
   const collectionTypes = ['FEIGE_COLLECTION_GET','FEIGE_COLLECTION_MUTATE','FEIGE_BATCH_SEND'];
-  if (sender.id !== chrome.runtime.id || !sender.tab || !['FEIGE_HEALTH','FEIGE_SEND','FEIGE_RECEIPT',...collectionTypes].includes(message?.type)) return;
+  if (sender.id !== chrome.runtime.id || !sender.tab || !['FEIGE_START','FEIGE_HEALTH','FEIGE_SEND','FEIGE_RECEIPT',...collectionTypes].includes(message?.type)) return;
   (async () => {
     try {
       if (collectionTypes.includes(message.type)) return reply(await serialized(() => collectionRequest(message)));
+      if (message.type === 'FEIGE_START') {await wakeBridge();return reply({ok:true});}
       await checkBridge();
       if (message.type === 'FEIGE_HEALTH') return reply({ok:true});
       if (message.type === 'FEIGE_RECEIPT') {
@@ -83,7 +97,8 @@ chrome.runtime.onMessage.addListener((message, sender, reply) => {
       }
       reply({ok:true,contextId:await postContext(message.context)});
     } catch (error) {
-      const known=['SEND_REJECTED','WRONG_SERVICE','OUTDATED_SERVICE','LOCAL_FILE','CONFLICT','EMPTY_COLLECTION','MISSING_PURPOSE','MISSING_INSTRUCTION','INVALID_ITEM','INVALID_LANGUAGE','INVALID_OPERATION','EMPTY','TOO_LONG','UNSUPPORTED_URL','COLLECTION_FULL','BATCH_TOO_LONG'];
+      if(message.type==='FEIGE_HEALTH'&&error.message==='BRIDGE_OFFLINE'&&wakeError)error=Error(wakeError);
+      const known=['NATIVE_UNAVAILABLE','PORT_OCCUPIED','START_TIMEOUT','START_FAILED','SEND_REJECTED','WRONG_SERVICE','OUTDATED_SERVICE','LOCAL_FILE','CONFLICT','EMPTY_COLLECTION','MISSING_PURPOSE','MISSING_INSTRUCTION','INVALID_ITEM','INVALID_LANGUAGE','INVALID_OPERATION','EMPTY','TOO_LONG','UNSUPPORTED_URL','COLLECTION_FULL','BATCH_TOO_LONG'];
       reply({ok:false,error:known.includes(error.message)?error.message:collectionTypes.includes(message.type)&&message.type!=='FEIGE_BATCH_SEND'?'STORAGE_ERROR':'BRIDGE_OFFLINE'});
     }
   })();
