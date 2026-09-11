@@ -60,8 +60,21 @@ python -m server.run
 
 1. 打开 `edge://extensions` 或 `chrome://extensions`。
 2. 开启开发者模式，点击“加载解压缩的扩展”。
-3. 选择本项目的 `extension/` 目录。
+3. 进入解压后的项目文件夹，再选择里面的 `extension` 子文件夹；该文件夹内应直接包含 `manifest.json`。
 4. 打开普通网页，点击浏览器工具栏的飞鸽图标，在页面内启用悬浮入口。
+
+例如下载 GitHub ZIP 后，目录结构为：
+
+```text
+shiji-feige-main/
+  extension/          <- 在“加载解压缩的扩展”中选择这一层
+    manifest.json
+    src/
+  server/
+  README.md
+```
+
+如果出现“清单文件丢失或不可读取”，请取消报错窗口，重新点击“加载解压缩的扩展”，进入项目目录并选择 `extension`。不要选择外层的 `shiji-feige-main` 或 ZIP 文件；如果解压后多套了一层同名目录，请继续进入，直到找到直接包含 `manifest.json` 的 `extension` 文件夹。
 
 页面刷新或导航后需重新启用。扩展商店和浏览器内部页面不支持注入。
 
